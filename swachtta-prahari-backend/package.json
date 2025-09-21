@@ -1,0 +1,70 @@
+{
+  "name": "swachhta-prahari-backend",
+  "version": "1.0.0",
+  "description": "AI-Driven Environmental Monitoring System Backend",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/",
+    "lint:fix": "eslint src/ --fix",
+    "setup": "node scripts/setup.js",
+    "seed": "node scripts/seed.js",
+    "docker:build": "docker build -t swachhta-prahari-backend .",
+    "docker:run": "docker run -p 8000:8000 swachhta-prahari-backend",
+    "format": "npx prettier . --write",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,ts,json,md}": "prettier --write"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1419.0",
+    "axios": "^1.12.0",
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.7.0",
+    "compression": "^1.7.4",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^6.8.1",
+    "express-validator": "^7.0.1",
+    "helmet": "^7.0.0",
+    "joi": "^17.9.2",
+    "jsonwebtoken": "^9.0.2",
+    "jspdf": "^3.0.2",
+    "moment": "^2.29.4",
+    "mongoose": "^7.5.0",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.14.4",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.10.1",
+    "puppeteer": "^24.19.0",
+    "redis": "^4.6.7",
+    "sequelize": "^6.37.7",
+    "sharp": "^0.32.1",
+    "socket.io": "^4.7.2",
+    "uuid": "^9.0.0",
+    "winston": "^3.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.5",
+    "eslint": "^8.45.0",
+    "husky": "^9.1.7",
+    "jest": "^29.6.2",
+    "nodemon": "^3.0.1",
+    "prettier": "^3.6.2",
+    "supertest": "^6.3.3"
+  },
+  "keywords": [
+    "environmental",
+    "monitoring",
+    "AI",
+    "UPSIDA",
+    "surveillance"
+  ],
+  "author": "KratiTech Pvt Ltd",
+  "license": "MIT"
+}
