@@ -14,8 +14,7 @@
     "seed": "node scripts/seed.js",
     "docker:build": "docker build -t swachhta-prahari-backend .",
     "docker:run": "docker run -p 8000:8000 swachhta-prahari-backend",
-    "format": "npx prettier . --write",
-    "prepare": "husky"
+    "format": "npx prettier . --write"
   },
   "lint-staged": {
     "*.{js,ts,json,md}": "prettier --write"
