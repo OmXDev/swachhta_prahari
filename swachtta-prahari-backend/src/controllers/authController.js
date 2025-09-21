@@ -5,6 +5,7 @@ const logger = require("../config/winston");
 const { getRedisClient } = require("../config/redis");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcryptjs");
+const otp = require('../models/otp')
 
 // Generate JWT tokens
 const generateTokens = (user) => {
@@ -56,17 +57,17 @@ const login = async (req, res) => {
     user.lastLogin = new Date();
     await user.save();
 
-    // Cache user session in Redis (optional)
-    const redis = getRedisClient();
-    await redis.setEx(
-      `user_session:${user._id}`,
-      86400, // 1 day
-      JSON.stringify({
-        userId: user._id,
-        username: user.username,
-        role: user.role,
-      })
-    );
+    // ===== Redis/session caching commented out for now =====
+    // const redis = getRedisClient();
+    // await redis.setEx(
+    //   `user_session:${user._id}`,
+    //   86400, // 1 day
+    //   JSON.stringify({
+    //     userId: user._id,
+    //     username: user.username,
+    //     role: user.role,
+    //   })
+    // );
 
     logger.info(`User logged in: ${user.username}`);
 
@@ -95,12 +96,13 @@ const login = async (req, res) => {
   }
 };
 
+
 module.exports = {
   login,
 };
 
 // in-memory OTP store
-const otpStore = {};
+// const otpStore = {};
 
 // configure nodemailer
 const transporter = nodemailer.createTransport({
@@ -228,87 +230,7 @@ Swachhta Prahari Team
   }
 };
 
-// ======================== LOGIN ========================
-// const login = async (req, res) => {
-//   try {
-//     const errors = validationResult(req);
-//     if (!errors.isEmpty()) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "Validation failed",
-//         errors: errors.array(),
-//       });
-//     }
-
-//     const { username, password } = req.body;
-//     console.log("Body received:", req.body);
-
-//     // Find user by username OR email
-//     const user = await User.findOne({
-//       $or: [{ username }, { email: username }],
-//       isActive: true,
-//     }).select("+password"); // because password has select: false in schema
-
-//     console.log("Login attempt:", username, password);
-//     console.log("User found:", user);
-
-//     if (!user || !(await user.comparePassword(password))) {
-//       logger.warn(`Failed login attempt for username: ${username}`);
-//       return res.status(401).json({
-//         success: false,
-//         message: "Invalid credentials",
-//       });
-//     }
-
-//     // Generate tokens
-//     const { accessToken, refreshToken } = generateTokens(user._id);
-
-//     // Save refresh token + last login
-//     user.refreshToken = refreshToken;
-//     user.lastLogin = new Date();
-//     await user.save();
-
-//     // Cache user session in Redis (optional)
-//     const redis = getRedisClient();
-//     await redis.setEx(
-//       `user_session:${user._id}`,
-//       86400,
-//       JSON.stringify({
-//         userId: user._id,
-//         username: user.username,
-//         role: user.role,
-//       }),
-//     );
-
-//     logger.info(`User logged in: ${user.username}`);
-//     res.json({
-//       success: true,
-//       message: "Login successful",
-//       data: {
-//         user: {
-//           id: user._id,
-//           username: user.username,
-//           email: user.email,
-//           name: user.name,
-//           role: user.role,
-//           department: user.department,
-//         },
-//         token: accessToken,
-//         refreshToken,
-//       },
-//     });
-//   } catch (error) {
-//     logger.error("Login error:", error);
-//     res.status(500).json({
-//       success: false,
-//       message: "Internal server error",
-//     });
-//   }
-// };
-
 // ======================== GET OTP ========================
-
-
 const getOtp = async (req, res) => {
   try {
     const { email, purpose } = req.body;
@@ -318,24 +240,16 @@ const getOtp = async (req, res) => {
 
     const user = await User.findOne({ email });
 
-    if (purpose === "login" || purpose === "forgot-password") {
-      // For login/reset → user must exist
-      if (!user) {
-        return res.status(404).json({ success: false, message: "User not found" });
-      }
-    } else if (purpose === "signup") {
-      // For signup → user must NOT exist
-      if (user) {
-        return res.status(400).json({ success: false, message: "User already exists" });
-      }
+    if ((purpose === "login" || purpose === "forgot-password") && !user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    } else if (purpose === "signup" && user) {
+      return res.status(400).json({ success: false, message: "User already exists" });
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Save OTP in Redis with 10 min TTL
-    const redis = getRedisClient();
-    await redis.setEx(`otp:${email}`, 600, otp);
-    console.log(`🔑 Stored OTP for ${email} (${purpose}): ${otp}`);
+    // Save OTP in MongoDB with TTL (10 min)
+    await Otp.create({ email, otp, purpose });
 
     await transporter.sendMail({
       from: `"Swachhta Prahari" <${process.env.EMAIL_USER}>`,
@@ -359,19 +273,13 @@ const verifyOtp = async (req, res) => {
       return res.status(400).json({ success: false, message: "Email and OTP required" });
     }
 
-    const redis = getRedisClient();
-    const storedOtp = await redis.get(`otp:${email}`);
-
-    if (!storedOtp) {
-      return res.status(400).json({ success: false, message: "OTP expired or not found" });
+    const record = await Otp.findOne({ email, otp });
+    if (!record) {
+      return res.status(400).json({ success: false, message: "OTP expired or invalid" });
     }
 
-    if (storedOtp !== otp) {
-      return res.status(400).json({ success: false, message: "Invalid OTP" });
-    }
-
-    // OTP matched → delete it so it can’t be reused
-    // await redis.del(`otp:${email}`);
+    // OTP verified → delete it
+    await Otp.deleteOne({ _id: record._id });
 
     return res.json({ success: true, message: "OTP verified" });
   } catch (err) {
@@ -379,6 +287,13 @@ const verifyOtp = async (req, res) => {
     return res.status(500).json({ success: false, message: "Failed to verify OTP" });
   }
 };
+
+module.exports = {
+  getOtp,
+  verifyOtp,
+};
+
+
 
 // ======================== UPDATE PASSWORD ========================
 // controllers/auth.js (updatePassword)
