@@ -47,7 +47,7 @@ global.io = io;
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 
 // CORS
-app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:3000", credentials: true }));
+app.use(cors({ origin: process.env.FRONTEND_URL || "https://swachhta-prahari1.vercel.app", credentials: true }));
 
 // Parsers
 app.use(compression());
