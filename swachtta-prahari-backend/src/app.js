@@ -21,18 +21,18 @@ const { keepServerAlive } = require("./jobs/cron.js");
 
 const app = express();
 
-(async () => {
-  try {
-    await connectRedis(); // 🔑 connect once at startup
-    console.log("✅ Redis connected");
+// (async () => {
+//   try {
+//     await connectRedis(); // 🔑 connect once at startup
+//     console.log("✅ Redis connected");
 
-    // start express after redis is ready
-    app.listen(3000, () => console.log("Server running on port 3000"));
-  } catch (err) {
-    console.error("❌ Failed to connect to Redis:", err);
-    process.exit(1); // crash app if Redis is mandatory
-  }
-})();
+//     // start express after redis is ready
+//     app.listen(3000, () => console.log("Server running on port 3000"));
+//   } catch (err) {
+//     console.error("❌ Failed to connect to Redis:", err);
+//     process.exit(1); // crash app if Redis is mandatory
+//   }
+// })();
 
 const server = createServer(app);
 const io = new Server(server, {
@@ -46,8 +46,23 @@ global.io = io;
 // Security middleware
 app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 
-// CORS
-app.use(cors({ origin: process.env.FRONTEND_URL || "https://swachhta-prahari1.vercel.app", credentials: true }));
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://swachhta-prahari1.vercel.app"
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
 // Parsers
 app.use(compression());
