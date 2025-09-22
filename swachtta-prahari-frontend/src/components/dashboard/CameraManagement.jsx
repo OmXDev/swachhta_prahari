@@ -181,6 +181,8 @@ export default function CameraManagement() {
     return alert("Please select a video first!");
   }
 
+  const token = localStorage.getItem("accessToken"); 
+  
   try {
     setUploading(true);
 
@@ -246,7 +248,7 @@ const res = await fetch(`${API_BASE_URL}/cameras/${cameraId}/videos`, {
   };
 
   const handleAddCamera = async () => {
-  const token = localStorage.getItem("accessToken"); // get JWT from storage
+  const token = localStorage.getItem("accessToken"); 
 
   const payload = {
     cameraId: newCamera.cameraId,
