@@ -246,66 +246,72 @@ const res = await fetch(`${API_BASE_URL}/cameras/${cameraId}/videos`, {
   };
 
   const handleAddCamera = async () => {
-    const addCameraPromise = new Promise(async (resolve, reject) => {
-      const payload = {
-        cameraId: newCamera.cameraId,
-        name: newCamera.name,
-        location: {
-          zone: newCamera.zone,
-          position: newCamera.position,
-        },
-        rtspUrl: newCamera.rtspUrl,
-        aiConfig: {
-          detectionTypes: newCamera.detections,
-        },
-      };
+  const token = localStorage.getItem("token"); // get JWT from storage
 
-      try {
-        const res = await fetch(`${API_BASE_URL}/cameras/addcamera`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          reject(data.message || "Failed to add camera");
-        } else {
-          resolve(data);
-        }
-      } catch (err) {
-        reject("Network error or server is down.");
-      }
-    });
-
-    toast.promise(
-      addCameraPromise,
-      {
-        loading: 'Adding camera...',
-        success: (data) => {
-          setShowAddModal(false);
-          setNewCamera({
-            cameraId: "",
-            name: "",
-            zone: "",
-            position: "",
-            rtspUrl: "",
-            detections: [],
-          });
-          return `Camera "${data.name}" added! 🎉`;
-        },
-        error: (errMsg) => {
-          return errMsg || 'Failed to add camera. Please try again.';
-        },
-      },
-      {
-        style: { minWidth: '250px' },
-        success: { duration: 5000 },
-        error: { duration: 5000 },
-      }
-    );
+  const payload = {
+    cameraId: newCamera.cameraId,
+    name: newCamera.name,
+    location: {
+      zone: newCamera.zone,
+      position: newCamera.position,
+    },
+    rtspUrl: newCamera.rtspUrl,
+    aiConfig: {
+      detectionTypes: newCamera.detections,
+    },
   };
+
+  const addCameraPromise = new Promise(async (resolve, reject) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/cameras/addCamera`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // ✅ include token
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        reject(data.message || "Failed to add camera");
+      } else {
+        resolve(data);
+      }
+    } catch (err) {
+      reject("Network error or server is down.");
+    }
+  });
+
+  toast.promise(
+    addCameraPromise,
+    {
+      loading: 'Adding camera...',
+      success: (data) => {
+        setShowAddModal(false);
+        setNewCamera({
+          cameraId: "",
+          name: "",
+          zone: "",
+          position: "",
+          rtspUrl: "",
+          detections: [],
+        });
+        return `Camera "${data.name}" added! 🎉`;
+      },
+      error: (errMsg) => {
+        return errMsg || 'Failed to add camera. Please try again.';
+      },
+    },
+    {
+      style: { minWidth: '250px' },
+      success: { duration: 5000 },
+      error: { duration: 5000 },
+    }
+  );
+};
+
 
 
   return (
