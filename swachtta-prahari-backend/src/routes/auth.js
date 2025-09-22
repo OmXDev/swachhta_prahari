@@ -20,7 +20,7 @@ router.post("/signup", signup);
 // Public routes
 router.post("/login", login);
 // router.post("/refresh", refreshToken);
-router.post("/get-otp", getOtp);
+router.post("/get-otp", getotp);
 router.post("/verify-otp", verifyOtp);
 router.post("/updatepassword", updatePassword);
 

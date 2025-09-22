@@ -5,7 +5,7 @@ const logger = require("../config/winston");
 const { getRedisClient } = require("../config/redis");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcryptjs");
-const otp = require('../models/otp')
+const Otp = require('../models/otp')
 
 // Generate JWT tokens
 const generateTokens = (user) => {
