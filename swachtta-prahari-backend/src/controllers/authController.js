@@ -5,7 +5,7 @@ const logger = require("../config/winston");
 const { getRedisClient } = require("../config/redis");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcryptjs");
-const Otp = require('../models/otp')
+const Otp = require('../models/otp.model')
 
 // Generate JWT tokens
 const generateTokens = (user) => {
@@ -140,7 +140,7 @@ const signup = async (req, res) => {
 
     const { name, department, role, email, username, password, createdByAdmin } = req.body;
 
-    if (!email || !username || !password || !name || !role) {
+    if (!email || !username || !password  ) {
       return res.status(400).json({
         success: false,
         message: "All required fields must be provided",
@@ -287,6 +287,7 @@ const verifyOtp = async (req, res) => {
     return res.status(500).json({ success: false, message: "Failed to verify OTP" });
   }
 };
+
 
 module.exports = {
   getOtp,

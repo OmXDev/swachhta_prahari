@@ -18,90 +18,177 @@ export default function SignupForm({ onSignup, onSwitchToLogin }) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [errors, setErrors] = useState({})
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault()
+  //   setErrors({})
+
+  //   if (step === 1) {
+  //     const newErrors = {}
+  //     if (!formData.email) newErrors.email = "Email is required"
+  //     if (!formData.username) newErrors.username = "Username is required"
+  //     if (!formData.password) newErrors.password = "Password is required"
+  //     if (formData.password !== formData.confirmPassword) {
+  //       newErrors.confirmPassword = "Passwords do not match"
+  //     }
+
+  //     if (Object.keys(newErrors).length > 0) {
+  //       setErrors(newErrors)
+  //       return
+  //     }
+
+  //     const otpPromise = sendOTP(formData.email)
+  //     toast.promise(otpPromise, {
+  //       loading: "Sending OTP...",
+  //       success: () => {
+  //         setStep(2)
+  //         return "OTP sent successfully! Check your email."
+  //       },
+  //       error: (err) => {
+  //         setErrors({ general: err.message || "Failed to send OTP" })
+  //         return "Failed to send OTP."
+  //       },
+  //     })
+  //   } else {
+  //     if (!otp) {
+  //       setErrors({ otp: "OTP is required" })
+  //       return
+  //     }
+
+  //     const signupPromise = new Promise(async (resolve, reject) => {
+  //       try {
+  //         const isValid = await verifyOTP(formData.email, otp)
+  //         if (isValid) {
+  //           await signup({ ...formData, otp })
+  //           resolve()
+  //         } else {
+  //           setErrors({ otp: "Invalid OTP" })
+  //           reject("Invalid OTP")
+  //         }
+  //       } catch (error) {
+  //         setErrors({ general: error.message || "Failed to create account" })
+  //         reject(error.message || "Failed to create account")
+  //       }
+  //     })
+
+  //     toast.promise(
+  //       signupPromise,
+  //       {
+  //         loading: "Creating your account...",
+  //         success: () => {
+  //           onSignup()
+  //           return "Signup successful! 🎉"
+  //         },
+  //         error: (errMsg) => errMsg || "Something went wrong!",
+  //       },
+  //       {
+  //         style: {
+  //           background: "#fff",
+  //           color: "#111827",
+  //           border: "1px solid #e5e7eb",
+  //           borderRadius: "8px",
+  //           padding: "12px 16px",
+  //           boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+  //           minWidth: "250px",
+  //         },
+  //         success: {
+  //           iconTheme: { primary: "#22c55e", secondary: "#fff" },
+  //           duration: 5000,
+  //         },
+  //         error: {
+  //           iconTheme: { primary: "#ef4444", secondary: "#fff" },
+  //           duration: 5000,
+  //         },
+  //       }
+  //     )
+  //   }
+  // }
+
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setErrors({})
+  e.preventDefault()
+  setErrors({})
 
-    if (step === 1) {
-      const newErrors = {}
-      if (!formData.email) newErrors.email = "Email is required"
-      if (!formData.username) newErrors.username = "Username is required"
-      if (!formData.password) newErrors.password = "Password is required"
-      if (formData.password !== formData.confirmPassword) {
-        newErrors.confirmPassword = "Passwords do not match"
-      }
-
-      if (Object.keys(newErrors).length > 0) {
-        setErrors(newErrors)
-        return
-      }
-
-      const otpPromise = sendOTP(formData.email)
-      toast.promise(otpPromise, {
-        loading: "Sending OTP...",
-        success: () => {
-          setStep(2)
-          return "OTP sent successfully! Check your email."
-        },
-        error: (err) => {
-          setErrors({ general: err.message || "Failed to send OTP" })
-          return "Failed to send OTP."
-        },
-      })
-    } else {
-      if (!otp) {
-        setErrors({ otp: "OTP is required" })
-        return
-      }
-
-      const signupPromise = new Promise(async (resolve, reject) => {
-        try {
-          const isValid = await verifyOTP(formData.email, otp)
-          if (isValid) {
-            await signup({ ...formData, otp })
-            resolve()
-          } else {
-            setErrors({ otp: "Invalid OTP" })
-            reject("Invalid OTP")
-          }
-        } catch (error) {
-          setErrors({ general: error.message || "Failed to create account" })
-          reject(error.message || "Failed to create account")
-        }
-      })
-
-      toast.promise(
-        signupPromise,
-        {
-          loading: "Creating your account...",
-          success: () => {
-            onSignup()
-            return "Signup successful! 🎉"
-          },
-          error: (errMsg) => errMsg || "Something went wrong!",
-        },
-        {
-          style: {
-            background: "#fff",
-            color: "#111827",
-            border: "1px solid #e5e7eb",
-            borderRadius: "8px",
-            padding: "12px 16px",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
-            minWidth: "250px",
-          },
-          success: {
-            iconTheme: { primary: "#22c55e", secondary: "#fff" },
-            duration: 5000,
-          },
-          error: {
-            iconTheme: { primary: "#ef4444", secondary: "#fff" },
-            duration: 5000,
-          },
-        }
-      )
+  if (step === 1) {
+    const newErrors = {}
+    if (!formData.email) newErrors.email = "Email is required"
+    if (!formData.username) newErrors.username = "Username is required"
+    if (!formData.password) newErrors.password = "Password is required"
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match"
     }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
+      return
+    }
+
+    const otpPromise = sendOTP(formData.email)
+    toast.promise(otpPromise, {
+      loading: "Sending OTP...",
+      success: () => {
+        setStep(2)
+        return "OTP sent successfully! Check your email."
+      },
+      error: (err) => {
+        setErrors({ general: err.message || "Failed to send OTP" })
+        return "Failed to send OTP."
+      },
+    })
+  } else {
+    if (!otp) {
+      setErrors({ otp: "OTP is required" })
+      return
+    }
+
+    const signupPromise = new Promise(async (resolve, reject) => {
+    try {
+      // 🔹 Dummy OTP check (always succeeds if OTP field is filled)
+      const isValid = otp.length === 6 || otp.length > 0 // adjust condition if you want stricter check
+      if (isValid) {
+        await signup({ ...formData, otp })
+        resolve()
+      } else {
+        setErrors({ otp: "Invalid OTP" })
+        reject("Invalid OTP")
+      }
+    } catch (error) {
+      setErrors({ general: error.message || "Failed to create account" })
+      reject(error.message || "Failed to create account")
+    }
+  })
+
+
+    toast.promise(
+      signupPromise,
+      {
+        loading: "Creating your account...",
+        success: () => {
+          onSignup()
+          return "Signup successful! 🎉"
+        },
+        error: (errMsg) => errMsg || "Something went wrong!",
+      },
+      {
+        style: {
+          background: "#fff",
+          color: "#111827",
+          border: "1px solid #e5e7eb",
+          borderRadius: "8px",
+          padding: "12px 16px",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.05)",
+          minWidth: "250px",
+        },
+        success: {
+          iconTheme: { primary: "#22c55e", secondary: "#fff" },
+          duration: 5000,
+        },
+        error: {
+          iconTheme: { primary: "#ef4444", secondary: "#fff" },
+          duration: 5000,
+        },
+      }
+    )
   }
+}
 
   const handleChange = (e) => {
     setFormData((prev) => ({

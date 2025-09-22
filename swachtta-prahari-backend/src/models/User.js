@@ -25,13 +25,13 @@ const userSchema = new mongoose.Schema(
       select: false, // do not return password by default
     },
     name: {
-      required:true,
+      // required:true,
       type: String,
       trim: true,
     },
     role: {
       type: String,
-      required:true,
+      // required:true,
       enum: ["admin", "payroll", "camera","reporting","ai","analyst"],
       default: "admin",
     },

@@ -90,11 +90,12 @@ export const AuthProvider = ({ children }) => {
   }
 
   const verifyOTP = async (email, otp) => {
-    const res = await fetch(`${API_BASE}/verify-otp`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, otp }),
-    })
+  const res = await fetch(`${API_BASE}/verify-otp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, otp }),
+  })
+
 
     const data = await res.json()
     if (!res.ok) throw new Error(data.message || "Failed to verify OTP")

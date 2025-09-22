@@ -7,7 +7,6 @@ const otpSchema = new mongoose.Schema({
   purpose: { type: String, required: true },
 }, { timestamps: true });
 
-// TTL index → expires documents after 10 minutes
 otpSchema.index({ createdAt: 1 }, { expireAfterSeconds: 600 });
 
 module.exports = mongoose.model("Otp", otpSchema);
