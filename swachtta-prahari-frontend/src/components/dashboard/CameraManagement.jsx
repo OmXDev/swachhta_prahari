@@ -189,11 +189,13 @@ export default function CameraManagement() {
 
     const cameraId = "ADGAS";  
 
-    const res = await fetch(`${API_BASE_URL}/cameras/${cameraId}/videos`, {
-      method: "POST",
-      body: formData,
-    });
-
+const res = await fetch(`${API_BASE_URL}/cameras/${cameraId}/videos`, {
+  method: "POST",
+  headers: {
+    "Authorization": `Bearer ${token}`, // ✅ Include token
+  },
+  body: formData, // FormData works without setting Content-Type
+});
     const data = await res.json();
 
     if (!res.ok) {
