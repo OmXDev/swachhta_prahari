@@ -246,7 +246,7 @@ const res = await fetch(`${API_BASE_URL}/cameras/${cameraId}/videos`, {
   };
 
   const handleAddCamera = async () => {
-  const token = localStorage.getItem("token"); // get JWT from storage
+  const token = localStorage.getItem("accessToken"); // get JWT from storage
 
   const payload = {
     cameraId: newCamera.cameraId,
